@@ -1,0 +1,10 @@
+*.bak
+*.swp
+*.db
+*.obj
+*.iobj
+*.pdb
+*.ipdb
+*.ipch
+*.log
+*.tlog
