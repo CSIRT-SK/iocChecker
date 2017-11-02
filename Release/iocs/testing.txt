@@ -1,0 +1,208 @@
+{
+    "success": true,
+    "data": [
+        {
+            "type": "and",
+            "name": "#61",
+            "id": 61,
+            "children": [
+                {
+                    "id": 62,
+                    "parent_id": 61,
+                    "type": "or",
+                    "name": "#62",
+                    "children": [
+                        {
+                            "id": 63,
+                            "name": "sme.sk",
+                            "type": "dns",
+                            "value": [
+                                "sme.sk"
+                            ]
+                        },
+                        {
+                            "id": 64,
+                            "name": "spynet",
+                            "type": "dns",
+                            "value": [
+                                "spynet2.microsoft.com"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 65,
+                    "parent_id": 61,
+                    "type": "or",
+                    "name": "#65",
+                    "children": [
+                        {
+                            "id": 66,
+                            "name": "name-cmd",
+                            "type": "file",
+                            "value": [
+                                "",
+                                "cmd.exe",
+                                "",
+                                ""
+                            ]
+                        },
+                        {
+                            "id": 67,
+                            "name": "path-system32",
+                            "type": "file",
+                            "value": [
+                                "C:\\Windows\\System32",
+                                "",
+                                "",
+                                ""
+                            ]
+                        },
+                        {
+                            "id": 68,
+                            "name": "md5-ncat",
+                            "type": "file",
+                            "value": [
+                                "",
+                                "ncat.exe",
+                                "md5",
+                                "7e0df5efd2adfc7feefebe42c3a18d02"
+                            ]
+                        },
+                        {
+                            "id": 69,
+                            "name": "sha1-ncat",
+                            "type": "file",
+                            "value": [
+                                "",
+                                "ncat.exe",
+                                "sha1",
+                                "e52433b84341f1bec29dc818b48132c045311a1f"
+                            ]
+                        },
+                        {
+                            "id": 70,
+                            "name": "sha256-ncat",
+                            "type": "file",
+                            "value": [
+                                "",
+                                "ncat.exe",
+                                "sha256",
+                                "5e107ea10383110bd801fb7de11f59ee35f02b8e1defcadf34c0e3e769df9341"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 71,
+                    "parent_id": 61,
+                    "type": "or",
+                    "name": "#71",
+                    "children": [
+                        {
+                            "id": 72,
+                            "name": "regex-ncat",
+                            "type": "file-regex",
+                            "value": [
+                                "C:\\\\.*\\\\ncat\\.exe",
+                                "md5",
+                                "7e0df5efd2adfc7feefebe42c3a18d02"
+                            ]
+                        },
+                        {
+                            "id": 73,
+                            "name": "regex-ConsoleApplication",
+                            "type": "file-regex",
+                            "value": [
+                                ".*C[son]+oleApp[a-z]*[1-9]\\.exe",
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 74,
+                    "parent_id": 61,
+                    "type": "or",
+                    "name": "#74",
+                    "children": [
+                        {
+                            "id": 75,
+                            "name": "regex-explorer",
+                            "type": "process-regex",
+                            "value": [
+                                "[explor\\.]+"
+                            ]
+                        },
+                        {
+                            "id": 76,
+                            "name": "sha256-far",
+                            "type": "process-hash",
+                            "value": [
+                                "sha256",
+                                "64fb8c6354422a73661da01c076ac5a5bb3da4e4c885f0e6546a55c34dba1aed"
+                            ]
+                        },
+                        {
+                            "id": 77,
+                            "name": "name-far",
+                            "type": "process-name",
+                            "value": [
+                                "Far.exe"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 78,
+                    "parent_id": 61,
+                    "type": "or",
+                    "name": "#78",
+                    "children": [
+                        {
+                            "id": 79,
+                            "name": "path-computername",
+                            "type": "registry",
+                            "value": [
+                                "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\ComputerName\\ComputerName",
+                                "",
+                                ""
+                            ]
+                        },
+                        {
+                            "id": 80,
+                            "name": "name-computername",
+                            "type": "registry",
+                            "value": [
+                                "",
+                                "ComputerName",
+                                ""
+                            ]
+                        },
+                        {
+                            "id": 81,
+                            "name": "value-cmd",
+                            "type": "registry",
+                            "value": [
+                                "",
+                                "",
+                                "cmd.exe"
+                            ]
+                        },
+                        {
+                            "id": 82,
+                            "name": "regex-safeboot",
+                            "type": "registry-regex",
+                            "value": [
+                                ".*Safe[Bto]*",
+                                ".*hell",
+                                "cmd[\\.ex]+"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

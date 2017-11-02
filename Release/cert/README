@@ -1,0 +1,6 @@
+Put your certificates here.
+
+Required files:
+ ca.pem
+ client.key
+ client.pem

@@ -1,11 +1,16 @@
 *.bak
 *.swp
+*.sdf
 *.db
+*.idb
+*.opendb
 *.obj
 *.iobj
 *.pdb
 *.ipdb
+*.pch
 *.ipch
+*.ilk
 *.log
 *.tlog
 lib/*.lib
