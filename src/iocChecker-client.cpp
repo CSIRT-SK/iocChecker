@@ -22,13 +22,19 @@
 #include <fcntl.h>
 #include <tchar.h>
 #include <locale>
+#include <openssl/crypto.h>
 
 using namespace std;
+
+void locking_function(int mode, int n, const char *file, int line) {
+	wcout << mode << " " << n << " " << file << " " << line << endl;
+}
 
 void makeLog(vector<Node*> nodes, string testName, string url, string org, std::vector<FailInfo> fails);
 void checkSystem(vector<Node*> nodes, bool checkIpv6, std::vector<FailInfo>* fails);
 int main()
 {
+	//CRYPTO_set_locking_callback(locking_function);
 	// dolezita poznamka !!!! ak sa nastavi output console do tohto modu tak sa nesmie pouzivat cout aj wcout zaroven
 	// moze sa pouzivat len jedna funkcia inak to padne
 	_setmode(_fileno(stdout), _O_U16TEXT);
@@ -108,14 +114,14 @@ void makeLog(vector<Node*> nodes, string testName, string url, string org, std::
 	jsonbuilder[L"set"] = name;
 	jsoncons::wjson iocs = jsoncons::wjson::array();
 
-	for (int i = 0; i < nodes.size(); ++i) {
+	for (unsigned int i = 0; i < nodes.size(); ++i) {
 		if (nodes[i]->priority < 10) {
 
 			jsoncons::wjson j;
 			j[L"id"] = nodes[i]->iocId;
 			j[L"result"] = nodes[i]->found;
 			jsoncons::wjson data = jsoncons::wjson::array();
-			for (int k = 0; k < nodes[i]->fdata.size(); ++k) {
+			for (unsigned int k = 0; k < nodes[i]->fdata.size(); ++k) {
 				data.add(nodes[i]->fdata[k]);
 			}
 			j[L"data"] = data;
@@ -126,7 +132,7 @@ void makeLog(vector<Node*> nodes, string testName, string url, string org, std::
 	}
 	jsoncons::wjson failDataReg = jsoncons::wjson::array();
 	jsoncons::wjson failDataCert = jsoncons::wjson::array();
-	for (int i = 0; i < fails.size(); ++i) {
+	for (unsigned int i = 0; i < fails.size(); ++i) {
 		jsoncons::wjson dataReg, dataCert;
 		if (fails[i].type.compare(L"Registry") == 0) {
 			dataReg[L"data"] = fails[i].data;
@@ -139,23 +145,35 @@ void makeLog(vector<Node*> nodes, string testName, string url, string org, std::
 		
 	}
 	jsoncons::wjson failData;
-	failData[L"FailedRegistry"] = failDataReg;
+	//failData[L"FailedRegistry"] = failDataReg;
 	failData[L"FailedCertificate"] = failDataCert;
 	jsonbuilder[L"FailedToOpen"] = failData;
 	jsonbuilder[L"results"] = iocs;
 	string s = "./logs/";
+	if (url.compare("") == 0) {
+		// create log with more verbose filename in local mode
+		// add by LB
+		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> conv;
+		s.append(conv.to_bytes(orgName).c_str());
+		s.append("_");
+		s.append(conv.to_bytes(dev).c_str());
+		s.append("_");
+	}
 	s.append(testName.c_str());
 	s.append(".log");
 	wofstream file;
 	jsoncons::woutput_format output;
 	output.escape_all_non_ascii(true);
-	wcout << jsoncons::pretty_print(jsonbuilder);
+	//wcout << jsoncons::pretty_print(jsonbuilder);
 	file.open(s, wofstream::out | wofstream::trunc);
 	file << jsoncons::pretty_print(jsonbuilder, output);
 	file.close();
 	if (url.compare("") != 0) {
 		CurlModule cMod;
+		//wcout << "pred odoslanim\n";
 		cMod.uploadDataToServer(url, testName);
+		//cMod.fetchDataFromServer(url, "files");
+		wcout << "Success\n";
 	}
 }
 
@@ -170,7 +188,7 @@ void checkSystem(vector<Node*> nodes, bool checkIpv6, std::vector<FailInfo>* fai
 	
 
 
-	for (int i = 0; i < nodes.size(); ++i) {
+	for (unsigned int i = 0; i < nodes.size(); ++i) {
 		if (nodes[i]->priority < 10) {
 			nodeQueue.push(nodes[i]);
 		}
@@ -192,7 +210,7 @@ void checkSystem(vector<Node*> nodes, bool checkIpv6, std::vector<FailInfo>* fai
 			vector<CERT_SEARCH_DATA> searchData;
 			vector<FindData> found;
 			found.clear();
-			for (int i = 0; i < workNodes.size(); ++i) {
+			for (unsigned int i = 0; i < workNodes.size(); ++i) {
 
 				CERT_SEARCH_DATA search;
 				search.found = false;
@@ -205,7 +223,7 @@ void checkSystem(vector<Node*> nodes, bool checkIpv6, std::vector<FailInfo>* fai
 			CertModule certModule;
 			certModule.checkCertificates(searchData, &found, fails);
 
-			for (int k = 0; k < found.size(); ++k) {
+			for (unsigned int k = 0; k < found.size(); ++k) {
 
 				nodes[searchData[found[k].id].iocId]->found = true;
 				nodes[searchData[found[k].id].iocId]->fdata = found[k].data;
@@ -221,7 +239,7 @@ void checkSystem(vector<Node*> nodes, bool checkIpv6, std::vector<FailInfo>* fai
 			vector<CONNECTION_SEARCH_DATA> searchData;
 			vector<FindData> found;
 			found.clear();
-			for (int i = 0; i < workNodes.size(); ++i) {
+			for (unsigned int i = 0; i < workNodes.size(); ++i) {
 
 				CONNECTION_SEARCH_DATA search;
 				search.found = false;
@@ -234,7 +252,7 @@ void checkSystem(vector<Node*> nodes, bool checkIpv6, std::vector<FailInfo>* fai
 			OpenConnectionModule connectModule;
 			connectModule.checkConnections(searchData, &found);
 
-			for (int k = 0; k < found.size(); ++k) {
+			for (unsigned int k = 0; k < found.size(); ++k) {
 				nodes[searchData[found[k].id].iocId]->found = true;
 				nodes[searchData[found[k].id].iocId]->fdata = found[k].data;
 			}
@@ -247,7 +265,7 @@ void checkSystem(vector<Node*> nodes, bool checkIpv6, std::vector<FailInfo>* fai
 			vector<DNS_SEARCH_DATA> searchData;
 			vector<FindData> found;
 			found.clear();
-			for (int i = 0; i < workNodes.size(); ++i) {
+			for (unsigned int i = 0; i < workNodes.size(); ++i) {
 
 				DNS_SEARCH_DATA search;
 				search.found = false;
@@ -260,7 +278,7 @@ void checkSystem(vector<Node*> nodes, bool checkIpv6, std::vector<FailInfo>* fai
 			DnsModule dnsModule;
 			dnsModule.checkDnsEntries(searchData, &found);
 
-			for (int k = 0; k < found.size(); ++k) {
+			for (unsigned int k = 0; k < found.size(); ++k) {
 				nodes[searchData[found[k].id].iocId]->found = true;
 				nodes[searchData[found[k].id].iocId]->fdata = found[k].data;
 			}
@@ -275,7 +293,7 @@ void checkSystem(vector<Node*> nodes, bool checkIpv6, std::vector<FailInfo>* fai
 			vector<MUTEX_SEARCH_DATA> searchData;
 			vector<FindData> found;
 			found.clear();
-			for (int i = 0; i < workNodes.size(); ++i) {
+			for (unsigned int i = 0; i < workNodes.size(); ++i) {
 
 				MUTEX_SEARCH_DATA search;
 				search.found = false;
@@ -288,7 +306,7 @@ void checkSystem(vector<Node*> nodes, bool checkIpv6, std::vector<FailInfo>* fai
 			MutantModule mutantModule;
 			mutantModule.checkMutexes(searchData, &found);
 
-			for (int k = 0; k < found.size(); ++k) {
+			for (unsigned int k = 0; k < found.size(); ++k) {
 				nodes[searchData[found[k].id].iocId]->found = true;
 				nodes[searchData[found[k].id].iocId]->fdata = found[k].data;
 			}
@@ -302,7 +320,7 @@ void checkSystem(vector<Node*> nodes, bool checkIpv6, std::vector<FailInfo>* fai
 			vector<PROCESS_SEARCH_DATA> searchData;
 			vector<FindData> found;
 			found.clear();
-			for (int i = 0; i < workNodes.size(); ++i) {
+			for (unsigned int i = 0; i < workNodes.size(); ++i) {
 
 				PROCESS_SEARCH_DATA search;
 				search.found = false;
@@ -314,7 +332,7 @@ void checkSystem(vector<Node*> nodes, bool checkIpv6, std::vector<FailInfo>* fai
 			}
 			ProcessModule procModule;
 			procModule.checkProcesses(searchData, &found);
-			for (int k = 0; k < found.size(); ++k) {
+			for (unsigned int k = 0; k < found.size(); ++k) {
 				nodes[searchData[found[k].id].iocId]->found = true;
 				nodes[searchData[found[k].id].iocId]->fdata = found[k].data;
 			}
@@ -329,7 +347,7 @@ void checkSystem(vector<Node*> nodes, bool checkIpv6, std::vector<FailInfo>* fai
 			vector<REGISTRY_SEARCH_DATA> searchData;
 			vector<FindData> found;
 			found.clear();
-			for (int i = 0; i < workNodes.size(); ++i) {
+			for (unsigned int i = 0; i < workNodes.size(); ++i) {
 				RegistryNode* regNode = (RegistryNode*)workNodes[i];
 				REGISTRY_SEARCH_DATA search;
 				search.found = false;
@@ -344,7 +362,7 @@ void checkSystem(vector<Node*> nodes, bool checkIpv6, std::vector<FailInfo>* fai
 			RegistryModule regModule;
 			regModule.checkRegistry(searchData, &found, fails);
 
-			for (int k = 0; k < found.size(); ++k) {
+			for (unsigned int k = 0; k < found.size(); ++k) {
 				nodes[searchData[found[k].id].iocId]->found = true;
 				nodes[searchData[found[k].id].iocId]->fdata = found[k].data;
 			}
@@ -359,7 +377,7 @@ void checkSystem(vector<Node*> nodes, bool checkIpv6, std::vector<FailInfo>* fai
 			vector<FILE_SEARCH_DATA> searchData;
 			vector<FindData> found;
 			found.clear();
-			for (int i = 0; i < workNodes.size(); ++i) {
+			for (unsigned int i = 0; i < workNodes.size(); ++i) {
 				FileNode* fileNode = (FileNode*)workNodes[i];
 				FILE_SEARCH_DATA search;
 				search.found = false;
@@ -375,7 +393,7 @@ void checkSystem(vector<Node*> nodes, bool checkIpv6, std::vector<FailInfo>* fai
 			FileModule fileModule;
 			fileModule.checkForFiles(searchData, &found);
 
-			for (int k = 0; k < found.size(); ++k) {
+			for (unsigned int k = 0; k < found.size(); ++k) {
 				nodes[searchData[found[k].id].iocId]->found = true;
 				nodes[searchData[found[k].id].iocId]->fdata = found[k].data;
 			}

@@ -9,6 +9,8 @@
 #include <openssl/sha.h>
 #include <openssl/md5.h>
 
+using namespace std;
+
 HashModule::HashModule() {
 
 };
@@ -18,6 +20,7 @@ HashModule::~HashModule() {
 };
 
 int HashModule::calc_md5A(std::string path, std::string* output) {
+	//wcerr << path.c_str() << endl ;
 	unsigned char hash[MD5_DIGEST_LENGTH];
 	FILE *file = fopen(path.c_str(), "rb");
 	MD5_CTX md5;
@@ -44,6 +47,7 @@ int HashModule::calc_md5A(std::string path, std::string* output) {
 }
 
 int HashModule::calc_md5W(std::wstring path, std::wstring* output) {
+	//wcerr << L"MD5 " << path.c_str() << endl;
 	unsigned char hash[MD5_DIGEST_LENGTH];
 	FILE* file = _wfopen(path.c_str(), L"rb");
 	MD5_CTX md5;
@@ -150,7 +154,9 @@ void HashModule::hashToStringA(unsigned char* hash, int length, std::string* out
 	output->clear();
 
 	for (int i = 0; i < length; ++i) {
-		sprintf(buffer + (i * 2), "%02x", hash[i]);
+		// fix by LB
+		//sprintf(buffer + (i * 2), "%02x", hash[i]);
+		snprintf(buffer + (i * 2), 3, "%02x", hash[i]);
 	}
 
 	buffer[length * 2] = '\0';
@@ -165,7 +171,9 @@ void HashModule::hashToStringW(unsigned char* hash, int length, std::wstring* ou
 	output->clear();
 
 	for (int i = 0; i < length; ++i) {
-		swprintf(buffer + (i * 2), L"%02x", hash[i]);
+		// fix by LB
+		//swprintf(buffer + (i * 2), L"%02x", hash[i]);
+		swprintf(buffer + (i * 2), 3, L"%02x", hash[i]);
 	}
 
 	buffer[length * 2] = '\0';

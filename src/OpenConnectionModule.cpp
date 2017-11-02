@@ -94,7 +94,7 @@ void OpenConnectionModule::checkTcpIpv4Connections(std::vector<CONNECTION_SEARCH
 			return;
 		}
 
-		for (int i = 0; i < pTcpTable->dwNumEntries; ++i) {
+		for (unsigned int i = 0; i < pTcpTable->dwNumEntries; ++i) {
 
 			struct sockaddr_in sAddrIn;
 			sAddrIn.sin_family = AF_INET;
@@ -113,7 +113,7 @@ void OpenConnectionModule::checkTcpIpv4Connections(std::vector<CONNECTION_SEARCH
 
 			mbstowcs(hostAddressW, hostAddress, NI_MAXHOST);
 
-			for (int j = 0; j < searchData.size(); ++j) {
+			for (unsigned int j = 0; j < searchData.size(); ++j) {
 				if (searchData[j].found)continue;
 				// addresa
 				if (searchData[j].type == CONNECTION_IP_DATA) {
@@ -170,7 +170,7 @@ void OpenConnectionModule::checkTcpIpv4Connections(std::vector<CONNECTION_SEARCH
 
 			mbstowcs(hostAddressW, hostAddress, NI_MAXHOST);
 
-			for (int j = 0; j < searchData.size(); ++j) {
+			for (unsigned int j = 0; j < searchData.size(); ++j) {
 				if (searchData[j].found)continue;
 				// addresa
 				if (searchData[j].type == CONNECTION_IP_DATA) {
@@ -240,7 +240,7 @@ void OpenConnectionModule::checkTcpIpv4Connections(std::vector<CONNECTION_SEARCH
 
 		// enum
 
-		for (int j = 0; j < pTcpTable->dwNumEntries; ++j) {
+		for (unsigned int j = 0; j < pTcpTable->dwNumEntries; ++j) {
 
 			struct sockaddr_in sAddrIn;
 			sAddrIn.sin_family = AF_INET;
@@ -252,7 +252,7 @@ void OpenConnectionModule::checkTcpIpv4Connections(std::vector<CONNECTION_SEARCH
 			bool resolved = false;
 			GetNameInfoW((struct sockaddr *) &sAddrIn, sizeof(sockaddr_in), hostAddressW, NI_MAXHOST, serviceNameW, NI_MAXSERV, NI_NUMERICSERV | NI_NUMERICHOST);
 
-			for (int i = 0; i < searchData.size(); ++i) {
+			for (unsigned int i = 0; i < searchData.size(); ++i) {
 				if (searchData[i].found)continue;
 				// addresa
 				if (searchData[i].type == CONNECTION_IP_DATA) {
@@ -303,7 +303,7 @@ void OpenConnectionModule::checkTcpIpv4Connections(std::vector<CONNECTION_SEARCH
 			resolved = false;
 			GetNameInfoW((struct sockaddr *) &sAddrIn, sizeof(sockaddr_in), hostAddressW, NI_MAXHOST, serviceNameW, NI_MAXSERV, NI_NUMERICSERV | NI_NUMERICHOST);
 
-			for (int i = 0; i < searchData.size(); ++i) {
+			for (unsigned int i = 0; i < searchData.size(); ++i) {
 
 				if (searchData[i].found)continue;
 				// addresa
@@ -378,11 +378,11 @@ void OpenConnectionModule::checkTcpIpv6Connections(std::vector<CONNECTION_SEARCH
 
 		AllocateAndGetTcpExTableFromStack((PVOID*)&pTcpTable, true, hProcessHeap, 0, 23);
 
-		for (int i = 0; i < pTcpTable->dwNumEntries; ++i) {
+		for (unsigned int i = 0; i < pTcpTable->dwNumEntries; ++i) {
 
 			struct sockaddr_in6 inAddr;
 			inAddr.sin6_family = AF_INET6;
-			inAddr.sin6_port = pTcpTable->table[i].dwLocalPort;
+			inAddr.sin6_port = (USHORT)(pTcpTable->table[i].dwLocalPort);
 
 			memcpy(inAddr.sin6_addr._S6_un._S6_u8, pTcpTable->table[i].ucLocalAddr, sizeof(inAddr.sin6_addr._S6_un._S6_u8));
 			inAddr.sin6_scope_id = pTcpTable->table[i].dwLocalScopeId;
@@ -398,7 +398,7 @@ void OpenConnectionModule::checkTcpIpv6Connections(std::vector<CONNECTION_SEARCH
 			mbstowcs(hostAddressW, hostAddress, NI_MAXHOST);
 			mbstowcs(serviceNameW, serviceName, NI_MAXHOST);
 
-			for (int j = 0; j < searchData.size(); ++j) {
+			for (unsigned int j = 0; j < searchData.size(); ++j) {
 
 				if (searchData[j].found)continue;
 				// addresa
@@ -445,7 +445,7 @@ void OpenConnectionModule::checkTcpIpv6Connections(std::vector<CONNECTION_SEARCH
 			}
 
 			inAddr.sin6_family = AF_INET6;
-			inAddr.sin6_port = pTcpTable->table[i].dwRemotePort;
+			inAddr.sin6_port = (USHORT)(pTcpTable->table[i].dwRemotePort);
 			memcpy(inAddr.sin6_addr._S6_un._S6_u8, pTcpTable->table[i].ucRemoteAddr, sizeof(inAddr.sin6_addr._S6_un._S6_u8));
 			inAddr.sin6_scope_id = pTcpTable->table[i].dwRemoteScopeId;
 			resolved = false;
@@ -454,7 +454,7 @@ void OpenConnectionModule::checkTcpIpv6Connections(std::vector<CONNECTION_SEARCH
 			mbstowcs(hostAddressW, hostAddress, NI_MAXHOST);
 			mbstowcs(serviceNameW, serviceName, NI_MAXHOST);
 
-			for (int j = 0; j < searchData.size(); ++j) {
+			for (unsigned int j = 0; j < searchData.size(); ++j) {
 
 				if (searchData[j].found)continue;
 				// addresa
@@ -518,11 +518,11 @@ void OpenConnectionModule::checkTcpIpv6Connections(std::vector<CONNECTION_SEARCH
 		GetExtendedTcpTable(NULL, &dwSize, false, AF_INET6, TCP_TABLE_OWNER_PID_ALL, 0);
 		PMIB_TCP6TABLE_OWNER_PID pTcp6Table = (MIB_TCP6TABLE_OWNER_PID *)malloc(dwSize);
 		if (GetExtendedTcpTable(pTcp6Table, &dwSize, false, AF_INET6, TCP_TABLE_OWNER_PID_ALL, 0) != NO_ERROR)return;
-		for (int i = 0; i < pTcp6Table->dwNumEntries; ++i) {
+		for (unsigned int i = 0; i < pTcp6Table->dwNumEntries; ++i) {
 			struct sockaddr_in6 inAddr;
 			memcpy(&inAddr.sin6_addr, pTcp6Table->table[i].ucLocalAddr, sizeof(inAddr.sin6_addr));
 			inAddr.sin6_family = AF_INET6;
-			inAddr.sin6_port = pTcp6Table->table[i].dwLocalPort;
+			inAddr.sin6_port = (USHORT)(pTcp6Table->table[i].dwLocalPort);
 			inAddr.sin6_scope_id = pTcp6Table->table[i].dwLocalScopeId;
 
 			wchar_t* hostNameW = new wchar_t[NI_MAXHOST];
@@ -531,7 +531,7 @@ void OpenConnectionModule::checkTcpIpv6Connections(std::vector<CONNECTION_SEARCH
 			bool resolved = false;
 			GetNameInfoW((struct sockaddr *) &inAddr, sizeof(sockaddr_in6), hostAddressW, NI_MAXHOST, serviceNameW, NI_MAXSERV, NI_NUMERICSERV | NI_NUMERICHOST);
 
-			for (int j = 0; j < searchData.size(); ++j) {
+			for (unsigned int j = 0; j < searchData.size(); ++j) {
 
 				if (searchData[j].found)continue;
 				// addresa
@@ -577,12 +577,12 @@ void OpenConnectionModule::checkTcpIpv6Connections(std::vector<CONNECTION_SEARCH
 
 			memcpy(&inAddr.sin6_addr, pTcp6Table->table[i].ucRemoteAddr, sizeof(inAddr.sin6_addr));
 			inAddr.sin6_family = AF_INET6;
-			inAddr.sin6_port = pTcp6Table->table[i].dwRemotePort;
+			inAddr.sin6_port = (USHORT)(pTcp6Table->table[i].dwRemotePort);
 			inAddr.sin6_scope_id = pTcp6Table->table[i].dwRemoteScopeId;
 			resolved = false;
 			GetNameInfoW((struct sockaddr *) &inAddr, sizeof(sockaddr_in6), hostAddressW, NI_MAXHOST, serviceNameW, NI_MAXSERV, NI_NUMERICSERV | NI_NUMERICHOST);
 
-			for (int j = 0; j < searchData.size(); ++j) {
+			for (unsigned int j = 0; j < searchData.size(); ++j) {
 
 				if (searchData[j].found)continue;
 				// addresa
@@ -644,71 +644,75 @@ void OpenConnectionModule::checkUdpIpv4Connections(std::vector<CONNECTION_SEARCH
 		GetUdpTable(NULL, &dwSize, false);
 
 		pUdpTable = (MIB_UDPTABLE *)malloc(dwSize);
-		if (GetUdpTable(pUdpTable, &dwSize, false) != NO_ERROR);
-		for (int i = 0; i < pUdpTable->dwNumEntries; ++i) {
-			struct sockaddr_in sAddrIn;
-			sAddrIn.sin_family = AF_INET;
-			sAddrIn.sin_addr.s_addr = pUdpTable->table[i].dwLocalAddr;
-			sAddrIn.sin_port = (u_short)pUdpTable->table[i].dwLocalPort;
+		//fix by JJ
+		//if (GetUdpTable(pUdpTable, &dwSize, false) != NO_ERROR);
+		if (GetUdpTable(pUdpTable, &dwSize, false) == NO_ERROR)
+		{
+			for (unsigned int i = 0; i < pUdpTable->dwNumEntries; ++i) {
+				struct sockaddr_in sAddrIn;
+				sAddrIn.sin_family = AF_INET;
+				sAddrIn.sin_addr.s_addr = pUdpTable->table[i].dwLocalAddr;
+				sAddrIn.sin_port = (u_short)pUdpTable->table[i].dwLocalPort;
 
-			char* hostName = new char[NI_MAXHOST];
-			char* hostAddress = new char[NI_MAXHOST];
-			char* serviceName = new char[NI_MAXSERV];
-			wchar_t* hostNameW = new wchar_t[NI_MAXHOST];
-			wchar_t* hostAddressW = new wchar_t[NI_MAXHOST];
-			wchar_t* serviceNameW = new wchar_t[NI_MAXSERV];
-			bool resolved = false;
-			getnameinfo((struct sockaddr *) &sAddrIn, sizeof(sockaddr_in), hostAddress, NI_MAXHOST, serviceName, NI_MAXSERV, NI_NUMERICSERV | NI_NUMERICHOST);
+				char* hostName = new char[NI_MAXHOST];
+				char* hostAddress = new char[NI_MAXHOST];
+				char* serviceName = new char[NI_MAXSERV];
+				wchar_t* hostNameW = new wchar_t[NI_MAXHOST];
+				wchar_t* hostAddressW = new wchar_t[NI_MAXHOST];
+				wchar_t* serviceNameW = new wchar_t[NI_MAXSERV];
+				bool resolved = false;
+				getnameinfo((struct sockaddr *) &sAddrIn, sizeof(sockaddr_in), hostAddress, NI_MAXHOST, serviceName, NI_MAXSERV, NI_NUMERICSERV | NI_NUMERICHOST);
 
-			mbstowcs(hostAddressW, hostAddress, NI_MAXHOST);
-			mbstowcs(serviceNameW, serviceName, NI_MAXHOST);
+				mbstowcs(hostAddressW, hostAddress, NI_MAXHOST);
+				mbstowcs(serviceNameW, serviceName, NI_MAXHOST);
 
-			for (int j = 0; j < searchData.size(); ++j) {
-				if (searchData[j].found)continue;
-				// addresa
-				if (searchData[j].type == CONNECTION_IP_DATA) {
-					if (searchData[j].data.compare(hostAddressW) == 0) {
-						FindData fd;
-						fd.id = j;
-						std::wstring ws(hostAddressW);
-						fd.data.push_back(hostAddressW);
-						found->push_back(fd);
+				for (unsigned int j = 0; j < searchData.size(); ++j) {
+					if (searchData[j].found)continue;
+					// addresa
+					if (searchData[j].type == CONNECTION_IP_DATA) {
+						if (searchData[j].data.compare(hostAddressW) == 0) {
+							FindData fd;
+							fd.id = j;
+							std::wstring ws(hostAddressW);
+							fd.data.push_back(hostAddressW);
+							found->push_back(fd);
+						}
+					}
+					// domena
+					if (searchData[j].type == CONNECTION_DOMAIN_DATA) {
+						if (resolved == false) {
+							getnameinfo((struct sockaddr *) &sAddrIn, sizeof(sockaddr_in), hostName, NI_MAXHOST, serviceName, NI_MAXSERV, NI_NUMERICSERV);
+							mbstowcs(hostNameW, hostName, NI_MAXHOST);
+							resolved = true;
+						}
+						if (searchData[j].data.compare(hostNameW) == 0) {
+							FindData fd;
+							fd.id = j;
+							std::wstring ws(hostNameW);
+							fd.data.push_back(hostNameW);
+							found->push_back(fd);
+						}
+					}
+
+					if (searchData[j].type == CONNECTION_DOMAIN_REGEX_DATA) {
+						if (resolved == false) {
+							getnameinfo((struct sockaddr *) &sAddrIn, sizeof(sockaddr_in), hostName, NI_MAXHOST, serviceName, NI_MAXSERV, NI_NUMERICSERV);
+							mbstowcs(hostNameW, hostName, NI_MAXHOST);
+							resolved = true;
+						}
+						std::wregex e(searchData[j].data);
+						if (std::regex_match(hostNameW, e)) {
+							FindData fd;
+							fd.id = j;
+							std::wstring ws(hostNameW);
+							fd.data.push_back(hostNameW);
+							found->push_back(fd);
+						}
 					}
 				}
-				// domena
-				if (searchData[j].type == CONNECTION_DOMAIN_DATA) {
-					if (resolved == false) {
-						getnameinfo((struct sockaddr *) &sAddrIn, sizeof(sockaddr_in), hostName, NI_MAXHOST, serviceName, NI_MAXSERV, NI_NUMERICSERV);
-						mbstowcs(hostNameW, hostName, NI_MAXHOST);
-						resolved = true;
-					}
-					if (searchData[j].data.compare(hostNameW) == 0) {
-						FindData fd;
-						fd.id = j;
-						std::wstring ws(hostNameW);
-						fd.data.push_back(hostNameW);
-						found->push_back(fd);
-					}
-				}
 
-				if (searchData[j].type == CONNECTION_DOMAIN_REGEX_DATA) {
-					if (resolved == false) {
-						getnameinfo((struct sockaddr *) &sAddrIn, sizeof(sockaddr_in), hostName, NI_MAXHOST, serviceName, NI_MAXSERV, NI_NUMERICSERV);
-						mbstowcs(hostNameW, hostName, NI_MAXHOST);
-						resolved = true;
-					}
-					std::wregex e(searchData[j].data);
-					if (std::regex_match(hostNameW, e)) {
-						FindData fd;
-						fd.id = j;
-						std::wstring ws(hostNameW);
-						fd.data.push_back(hostNameW);
-						found->push_back(fd);
-					}
-				}
+				delete hostName, hostAddress, serviceName, hostNameW, hostAddressW, serviceNameW;
 			}
-
-			delete hostName, hostAddress, serviceName, hostNameW, hostAddressW, serviceNameW;
 		}
 
 		delete pUdpTable;
@@ -725,64 +729,68 @@ void OpenConnectionModule::checkUdpIpv4Connections(std::vector<CONNECTION_SEARCH
 		}
 
 		pUdpTable = (MIB_UDPTABLE *)malloc(dwSize);
-		if (GetUdpTable(pUdpTable, &dwSize, false) != NO_ERROR);
-		for (int i = 0; i < pUdpTable->dwNumEntries; ++i) {
-			struct sockaddr_in sAddrIn;
-			sAddrIn.sin_family = AF_INET;
-			sAddrIn.sin_addr.s_addr = pUdpTable->table[i].dwLocalAddr;
-			sAddrIn.sin_port = (u_short)pUdpTable->table[i].dwLocalPort;
+		//fix by JJ
+		//if (GetUdpTable(pUdpTable, &dwSize, false) != NO_ERROR);
+		if (GetUdpTable(pUdpTable, &dwSize, false) == NO_ERROR)
+		{
+			for (unsigned int i = 0; i < pUdpTable->dwNumEntries; ++i) {
+				struct sockaddr_in sAddrIn;
+				sAddrIn.sin_family = AF_INET;
+				sAddrIn.sin_addr.s_addr = pUdpTable->table[i].dwLocalAddr;
+				sAddrIn.sin_port = (u_short)pUdpTable->table[i].dwLocalPort;
 
-			wchar_t* hostNameW = new wchar_t[NI_MAXHOST];
-			wchar_t* hostAddressW = new wchar_t[NI_MAXHOST];
-			wchar_t* serviceNameW = new wchar_t[NI_MAXSERV];
-			bool resolved = false;
-			GetNameInfoW((struct sockaddr *) &sAddrIn, sizeof(sockaddr_in), hostAddressW, NI_MAXHOST, serviceNameW, NI_MAXSERV, NI_NUMERICSERV | NI_NUMERICHOST);
+				wchar_t* hostNameW = new wchar_t[NI_MAXHOST];
+				wchar_t* hostAddressW = new wchar_t[NI_MAXHOST];
+				wchar_t* serviceNameW = new wchar_t[NI_MAXSERV];
+				bool resolved = false;
+				GetNameInfoW((struct sockaddr *) &sAddrIn, sizeof(sockaddr_in), hostAddressW, NI_MAXHOST, serviceNameW, NI_MAXSERV, NI_NUMERICSERV | NI_NUMERICHOST);
 
-			for (int j = 0; j < searchData.size(); ++j) {
+				for (unsigned int j = 0; j < searchData.size(); ++j) {
 
-				if (searchData[j].found)continue;
-				// addresa
-				if (searchData[j].type == CONNECTION_IP_DATA) {
-					if (searchData[j].data.compare(hostAddressW) == 0) {
-						FindData fd;
-						fd.id = j;
-						std::wstring ws(hostAddressW);
-						fd.data.push_back(hostAddressW);
-						found->push_back(fd);
+					if (searchData[j].found)continue;
+					// addresa
+					if (searchData[j].type == CONNECTION_IP_DATA) {
+						if (searchData[j].data.compare(hostAddressW) == 0) {
+							FindData fd;
+							fd.id = j;
+							std::wstring ws(hostAddressW);
+							fd.data.push_back(hostAddressW);
+							found->push_back(fd);
+						}
+					}
+					// domena
+					if (searchData[j].type == CONNECTION_DOMAIN_DATA) {
+						if (resolved == false) {
+							GetNameInfoW((struct sockaddr *) &sAddrIn, sizeof(sockaddr_in), hostNameW, NI_MAXHOST, serviceNameW, NI_MAXSERV, NI_NUMERICSERV);
+							resolved = true;
+						}
+						if (searchData[j].data.compare(hostNameW) == 0) {
+							FindData fd;
+							fd.id = j;
+							std::wstring ws(hostNameW);
+							fd.data.push_back(hostNameW);
+							found->push_back(fd);
+						}
+					}
+
+					if (searchData[j].type == CONNECTION_DOMAIN_REGEX_DATA) {
+						if (resolved == false) {
+							GetNameInfoW((struct sockaddr *) &sAddrIn, sizeof(sockaddr_in), hostNameW, NI_MAXHOST, serviceNameW, NI_MAXSERV, NI_NUMERICSERV);
+							resolved = true;
+						}
+						std::wregex e(searchData[j].data);
+						if (std::regex_match(hostNameW, e)) {
+							FindData fd;
+							fd.id = j;
+							std::wstring ws(hostNameW);
+							fd.data.push_back(hostNameW);
+							found->push_back(fd);
+						}
 					}
 				}
-				// domena
-				if (searchData[j].type == CONNECTION_DOMAIN_DATA) {
-					if (resolved == false) {
-						GetNameInfoW((struct sockaddr *) &sAddrIn, sizeof(sockaddr_in), hostNameW, NI_MAXHOST, serviceNameW, NI_MAXSERV, NI_NUMERICSERV);
-						resolved = true;
-					}
-					if (searchData[j].data.compare(hostNameW) == 0) {
-						FindData fd;
-						fd.id = j;
-						std::wstring ws(hostNameW);
-						fd.data.push_back(hostNameW);
-						found->push_back(fd);
-					}
-				}
 
-				if (searchData[j].type == CONNECTION_DOMAIN_REGEX_DATA) {
-					if (resolved == false) {
-						GetNameInfoW((struct sockaddr *) &sAddrIn, sizeof(sockaddr_in), hostNameW, NI_MAXHOST, serviceNameW, NI_MAXSERV, NI_NUMERICSERV);
-						resolved = true;
-					}
-					std::wregex e(searchData[j].data);
-					if (std::regex_match(hostNameW, e)) {
-						FindData fd;
-						fd.id = j;
-						std::wstring ws(hostNameW);
-						fd.data.push_back(hostNameW);
-						found->push_back(fd);
-					}
-				}
+				delete hostNameW, hostAddressW, serviceNameW;
 			}
-
-			delete hostNameW, hostAddressW, serviceNameW;
 		}
 
 		delete pUdpTable;
@@ -813,11 +821,11 @@ void OpenConnectionModule::checkUdpIpv6Connections(std::vector<CONNECTION_SEARCH
 
 		AllocateAndGetUdpExTableFromStack((PVOID*)&pUdpTable, true, hProcessHeap, 0, AF_INET6);
 
-		for (int i = 0; i < pUdpTable->dwNumEntries; ++i) {
+		for (unsigned int i = 0; i < pUdpTable->dwNumEntries; ++i) {
 
 			struct sockaddr_in6 inAddr;
 			inAddr.sin6_family = AF_INET6;
-			inAddr.sin6_port = pUdpTable->table[i].dwLocalPort;
+			inAddr.sin6_port = (USHORT)(pUdpTable->table[i].dwLocalPort);
 
 			memcpy(inAddr.sin6_addr._S6_un._S6_u8, pUdpTable->table[i].ucLocalAddr, sizeof(inAddr.sin6_addr._S6_un._S6_u8));
 			inAddr.sin6_scope_id = pUdpTable->table[i].dwLocalScopeId;
@@ -833,7 +841,7 @@ void OpenConnectionModule::checkUdpIpv6Connections(std::vector<CONNECTION_SEARCH
 			mbstowcs(hostAddressW, hostAddress, NI_MAXHOST);
 			mbstowcs(serviceNameW, serviceName, NI_MAXHOST);
 
-			for (int j = 0; j < searchData.size(); ++j) {
+			for (unsigned int j = 0; j < searchData.size(); ++j) {
 
 				if (searchData[j].found)continue;
 				// addresa
@@ -905,12 +913,12 @@ void OpenConnectionModule::checkUdpIpv6Connections(std::vector<CONNECTION_SEARCH
 			return;
 		}
 
-		for (int i = 0; i < pUdp6Table->dwNumEntries; ++i) {
+		for (unsigned int i = 0; i < pUdp6Table->dwNumEntries; ++i) {
 			struct sockaddr_in6 inAddr;
 			inAddr.sin6_addr._S6_un = pUdp6Table->table[i].dwLocalAddr._S6_un;
 
 			inAddr.sin6_family = AF_INET6;
-			inAddr.sin6_port = pUdp6Table->table[i].dwLocalPort;
+			inAddr.sin6_port = (USHORT)(pUdp6Table->table[i].dwLocalPort);
 			inAddr.sin6_scope_id = pUdp6Table->table[i].dwLocalScopeId;
 			wchar_t* hostNameW = new wchar_t[NI_MAXHOST];
 			wchar_t* hostAddressW = new wchar_t[NI_MAXHOST];
@@ -918,7 +926,7 @@ void OpenConnectionModule::checkUdpIpv6Connections(std::vector<CONNECTION_SEARCH
 			bool resolved = false;
 			GetNameInfoW((struct sockaddr *) &inAddr, sizeof(sockaddr_in6), hostAddressW, NI_MAXHOST, serviceNameW, NI_MAXSERV, NI_NUMERICSERV | NI_NUMERICHOST);
 
-			for (int j = 0; j < searchData.size(); ++j) {
+			for (unsigned int j = 0; j < searchData.size(); ++j) {
 
 				if (searchData[j].found)continue;
 				// addresa

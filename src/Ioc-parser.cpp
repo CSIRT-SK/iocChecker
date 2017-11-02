@@ -36,7 +36,7 @@ std::vector<Node*> IocParser::parseFile(std::string filePath) {
 
 	wjson data = root.get(L"data", L"");
 
-	for (int i = 0; i < data.size(); ++i) {
+	for (unsigned int i = 0; i < data.size(); ++i) {
 
 		Node* node = parseNode(data[i], &nodes);
 		node->index = nodes.size();
@@ -64,7 +64,7 @@ Node* IocParser::parseNode(jsoncons::wjson data, vector<Node*>* nodes) {
 
 		wjson children = data.get(L"children", L"nope");
 
-		for (int j = 0; j < children.size(); ++j) {
+		for (unsigned int j = 0; j < children.size(); ++j) {
 			Node* retNode = parseNode(children[j], nodes);
 			int id = nodes->size();
 			retNode->index = id;
@@ -82,7 +82,7 @@ Node* IocParser::parseNode(jsoncons::wjson data, vector<Node*>* nodes) {
 
 		wjson children = data.get(L"children", L"nope");
 
-		for (int j = 0; j < children.size(); ++j) {
+		for (unsigned int j = 0; j < children.size(); ++j) {
 			Node* retNode = parseNode(children[j], nodes);
 			int id = nodes->size();
 			retNode->index = id;

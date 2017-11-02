@@ -48,8 +48,8 @@ typedef struct _SYSTEM_HANDLE_INFORMATION // Size=20
 	SYSTEM_HANDLE Handles[1]; // Size=16 Offset=4
 } SYSTEM_HANDLE_INFORMATION, *PSYSTEM_HANDLE_INFROMATION;
 
-
-typedef enum OBJECT_INFORMATION_CLASS {// z msdn nepouzivam len pre hodnoty potom zmaz
+//fix by JJ
+/*typedef*/ enum OBJECT_INFORMATION_CLASS {// z msdn nepouzivam len pre hodnoty potom zmaz
 	objectBasicInformation = 0,
 	objectNameInformation = 1,
 	objectTypeInformation = 2

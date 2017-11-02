@@ -12,6 +12,9 @@
 #include <fcntl.h>
 #include <tchar.h>
 #include <locale>
+#include <iostream>
+
+using namespace std;
 
 size_t CurlModule::write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
 	size_t written = fwrite(ptr, size, nmemb, stream);
@@ -39,14 +42,15 @@ int CurlModule::uploadDataToServer(std::string url, std::string setName) {
 	//jsoncons::wjson root;
 	//dataIn >> root;
 
+	//wcout << "easy_init\n";
 	curl = curl_easy_init();
 	if (curl) {
 		//std::wstring data = root.as_string();
 		//int size_needed = WideCharToMultiByte(CP_UTF8, 0, &data[0], (int)data.size(), NULL, 0, NULL, NULL);
 		//std::string strTo(size_needed, 0);
-		
+
 		//WideCharToMultiByte(CP_UTF8, 0, &data[0], (int)data.size(), &strTo[0], size_needed, NULL, NULL);
-		
+
 
 		//strTo = curl_easy_escape(curl, strTo.c_str(), strTo.size());
 		//std::cout << strTo << " " << size_needed;
@@ -54,9 +58,14 @@ int CurlModule::uploadDataToServer(std::string url, std::string setName) {
 		connect.append(url);
 		post.append("controller=client&action=upload&report=");
 		post.append(ioc);
+		//wcout << "easy_setopt\n";
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, post.c_str());
+		//curl_easy_setopt(curl, CURLOPT_POSTFIELDS, curl_easy_escape(curl, post.c_str(), post.size()));
 		//curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, size*4);
-		curl_easy_setopt(curl, CURLOPT_URL, connect.c_str());     
+		curl_easy_setopt(curl, CURLOPT_URL, connect.c_str());  
+		FILE *fp = fopen("./post.log", "w");
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
 		char buffer[CURL_ERROR_SIZE];
 
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, buffer);
@@ -76,11 +85,15 @@ int CurlModule::uploadDataToServer(std::string url, std::string setName) {
 		curl_easy_setopt(curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
 		curl_easy_setopt(curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
 		
+		//wcout << "easy_perform\n";
 		res = curl_easy_perform(curl);
+		//wcout << "easy_perform end\n";
 	//	delete data;
 		if (res != CURLE_OK) {
-			printf("%s", curl_easy_strerror(res));
-			printf("\n%s", buffer);
+			//fix by JJ
+			//printf("%s", curl_easy_strerror(res));
+			//printf("\n%s", buffer);
+			wcout << curl_easy_strerror(res) << '\n' << buffer << '\n';
 		}
 		
 		curl_easy_cleanup(curl);
@@ -136,8 +149,10 @@ int CurlModule::fetchDataFromServer(std::string url, std::string setName) {
 		res = CURLE_OK;
 		res = curl_easy_perform(curl);
 		if (res != CURLE_OK) {
-			printf("%s", curl_easy_strerror(res));
-			printf("\n%s", buffer);
+			//fix by JJ
+			//printf("%s", curl_easy_strerror(res));
+			//printf("\n%s", buffer);
+			wcout << curl_easy_strerror(res) << '\n' << buffer << '\n';
 		}
 		fclose(fp);
 		curl_easy_cleanup(curl);

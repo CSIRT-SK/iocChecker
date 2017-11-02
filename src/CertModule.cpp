@@ -64,7 +64,7 @@ BOOL CertModule::checkSystemStore(const void* pvSystemStore, DWORD dwFlags, PCER
 				DWORD size = CertNameToStrW(pCertContext->dwCertEncodingType, &(pCertContext->pCertInfo->Issuer), CERT_X500_NAME_STR, NULL, 0);
 				wchar_t* buff = new wchar_t[size];
 				DWORD retValue = CertNameToStrW(pCertContext->dwCertEncodingType, &(pCertContext->pCertInfo->Issuer), CERT_X500_NAME_STR, buff, size);
-				for (int i = 0; i < searchData.size(); ++i) {
+				for (unsigned int i = 0; i < searchData.size(); ++i) {
 					if (wcsstr(buff, searchData[i].data.c_str()) != NULL) {
 						FindData fd;
 						fd.id = i;
@@ -104,9 +104,9 @@ BOOL CertModule::checkSystemStore(const void* pvSystemStore, DWORD dwFlags, PCER
 							&dwSize);
 
 						if (pCertAltNameInfo != NULL) {
-							for (int i = 0; i < pCertAltNameInfo->cAltEntry; ++i) {
+							for (unsigned int i = 0; i < pCertAltNameInfo->cAltEntry; ++i) {
 								if (pCertAltNameInfo->rgAltEntry[i].dwAltNameChoice == CERT_ALT_NAME_DNS_NAME) {
-									for (int j = 0; j < searchData.size(); ++j) {
+									for (unsigned int j = 0; j < searchData.size(); ++j) {
 										if (searchData[j].type == CERT_DOMAIN_DATA) {
 											if (searchData[j].data.compare(pCertAltNameInfo->rgAltEntry[i].pwszDNSName) == 0) {
 												FindData fd;

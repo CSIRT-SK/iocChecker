@@ -5,6 +5,11 @@
 
 #pragma once
 
+//fix by LB: move to stdafx.h
+#ifndef UNICODE
+#define UNICODE
+#endif
+
 #include "targetver.h"
 
 #include <stdio.h>

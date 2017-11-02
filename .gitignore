@@ -8,3 +8,6 @@
 *.ipch
 *.log
 *.tlog
+lib/*.lib
+include/openssl/*.h
+include/curl/*.h

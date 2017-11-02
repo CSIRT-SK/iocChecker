@@ -1,6 +1,7 @@
-#ifndef UNICODE
-#define UNICODE
-#endif
+//fix by LB: move to stdafx.h
+//#ifndef UNICODE
+//#define UNICODE
+//#endif
 
 #include "stdafx.h"
 #include "Defines.h"
@@ -55,7 +56,7 @@ void RegistryModule::checkRegistry(std::vector<REGISTRY_SEARCH_DATA> searchData,
 	helper.keyName = L"HKEY_CURRENT_USER_LOCAL_SETTINGS";
 	bases.push_back(helper);
 
-	for (int i = 0; i < bases.size(); ++i) {
+	for (unsigned int i = 0; i < bases.size(); ++i) {
 		FindKeyByNameOrValue(searchData, bases[i].hKey, bases[i].keyName, L"", L"", found, fails);
 	}
 
@@ -81,10 +82,10 @@ bool RegistryModule::FindKeyByNameOrValue(std::vector<REGISTRY_SEARCH_DATA> sear
 		subkeys.clear();
 
 		// pozri ci ho nehladas
-		int i = 0;
+		unsigned int i = 0;
 		DWORD numofsubkeys = 0;
 
-		for (int k = 0; k < searchData.size(); ++k) {
+		for (unsigned int k = 0; k < searchData.size(); ++k) {
 
 			if (searchData[k].found)continue;
 			if (searchData[k].dataId == REGISTRY_EXACT_DATA) {
@@ -224,7 +225,7 @@ bool RegistryModule::checkValue(HKEY hKey, REGISTRY_SEARCH_DATA data, bool regex
 	DWORD numOfValues;
 	RegQueryInfoKeyW(hKey, NULL, NULL, NULL, NULL, NULL, NULL, &numOfValues, NULL, NULL, NULL, NULL);
 
-	for (int i = 0; i < numOfValues; ++i) {
+	for (unsigned int i = 0; i < numOfValues; ++i) {
 		DWORD bufferSize = 16383;
 		DWORD dataSize = 0;
 		wchar_t* valueName = new wchar_t[bufferSize];
@@ -346,8 +347,9 @@ bool RegistryModule::compareData(std::wstring s, unsigned char* data, int dataSi
 	unsigned long long qwValue; // QWORD nemam header ale def je takyto
 	// Windows systemy su littleENdian tkaze je to jedno
 	if ((valueType == REG_QWORD) || (valueType == REG_QWORD_LITTLE_ENDIAN)) {
-		qwValue = (data[7] << 56) | (data[6] << 48) | (data[5] << 40) | (data[4] << 32) |
-			(data[3] << 24) | (data[2] << 16) | (data[1] << 8) | (data[0]);
+		//fix by JJ - added (unsigned long long)()
+		qwValue = ((unsigned long long)(data[7]) << 56) | ((unsigned long long)(data[6]) << 48) | ((unsigned long long)(data[5]) << 40) | ((unsigned long long)(data[4]) << 32) |
+			((unsigned long long)(data[3]) << 24) | ((unsigned long long)(data[2]) << 16) | ((unsigned long long)(data[1]) << 8) | ((unsigned long long)(data[0]));
 		std::wstring val = std::to_wstring(qwValue);
 		if (regexp) {
 			std::wregex e;
@@ -392,7 +394,7 @@ bool RegistryModule::compareData(std::wstring s, unsigned char* data, int dataSi
 
 
 		std::wstring wsData;
-		for (int i = 0; i < multiValData.size(); ++i) {
+		for (unsigned int i = 0; i < multiValData.size(); ++i) {
 			wsData.append(multiValData[i]);
 			wsData.append(L" ");
 		}
@@ -440,7 +442,8 @@ int RegistryModule::GetPrivileges() {
 }
 
 int RegistryModule::DropPrivileges() {
-	HANDLE hProcess;
+	//fix by JJ - commented out
+	//HANDLE hProcess;
 	HANDLE hToken;
 	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken)) {
 		return 1;

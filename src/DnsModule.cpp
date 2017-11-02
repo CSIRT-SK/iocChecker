@@ -1,6 +1,7 @@
-#ifndef UNICODE
-#define UNICODE
-#endif
+//fix by LB: move to stdafx.h
+//#ifndef UNICODE
+//#define UNICODE
+//#endif
 
 #include "stdafx.h"
 
@@ -23,7 +24,7 @@ void DnsModule::checkDnsEntries(std::vector<DNS_SEARCH_DATA> names, std::vector<
 		std::wstring ws((wchar_t*)pRecord->pName);
 		pRecord = pRecord->pNext;
 
-		for (int it = 0; it < names.size(); ++it) {
+		for (unsigned int it = 0; it < names.size(); ++it) {
 			if (names[it].data.compare(ws) == 0) {
 				FindData fd;
 				fd.id = it;

@@ -1,6 +1,7 @@
-#ifndef UNICODE
-#define UNICODE
-#endif
+//fix by LB: move to stdafx.h
+//#ifndef UNICODE
+//#define UNICODE
+//#endif
 
 #include "stdafx.h"
 #include "MutantModule.h"
@@ -58,13 +59,15 @@ void MutantModule::checkMutexes(std::vector<MUTEX_SEARCH_DATA> searchData, std::
 
 	PSYSTEM_HANDLE_INFROMATION shi = (PSYSTEM_HANDLE_INFROMATION)handleInfo;
 
-	int pom;
+	//fix by JJ
+	//int pom;
 
-	for (int i = 0; i < shi->NumberOfHandles; ++i) {
+	for (unsigned int i = 0; i < shi->NumberOfHandles; ++i) {
 
 		SYSTEM_HANDLE handle = shi->Handles[i];
 
-		ULONG size;
+		//fix by JJ
+		//ULONG size;
 		DWORD pid = handle.ProcessId;
 		HANDLE hProcess = NULL;
 		PVOID pvObjectNameInfo;
@@ -130,7 +133,7 @@ void MutantModule::checkMutexes(std::vector<MUTEX_SEARCH_DATA> searchData, std::
 		if (name.Length != 0) {
 			std::wstring wss(name.Buffer);
 
-			for (int i = 0; i < searchData.size(); ++i) {
+			for (unsigned int i = 0; i < searchData.size(); ++i) {
 				if (searchData[i].found)continue;
 				if (wss.find(searchData[i].data.c_str()) != std::wstring::npos) {
 					searchData[i].found = true;

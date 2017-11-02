@@ -3,7 +3,12 @@
 #ifndef PROCESSMODULE_H
 #define PROCESSMODULE_H
 
+//fix by LB
+#ifdef _WIN32_WINNT
+#undef _WIN32_WINNT
 #define _WIN32_WINNT 0x0501
+#endif
+
 #define PSAPI_VERSION 1
 
 #include <windows.h>

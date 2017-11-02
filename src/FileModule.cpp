@@ -1,6 +1,7 @@
-#ifndef UNICODE
-#define UNICODE
-#endif
+//fix by LB: move to stdafx.h
+//#ifndef UNICODE
+//#define UNICODE
+//#endif
 
 #include "stdafx.h"
 
@@ -36,7 +37,7 @@ int FileModule::checkForFiles(std::vector<FILE_SEARCH_DATA> searchData, std::vec
 	volumes.clear();
 	enumerateDrives(&volumes);
 
-	for (int i = 0; i < searchData.size(); ++i) {
+	for (unsigned int i = 0; i < searchData.size(); ++i) {
 		if ((searchData[i].dataId == FILE_EXACT_DATA) && (searchData[i].path.compare(L"") != 0) && (searchData[i].name.compare(L"") != 0)) {
 			std::wstring path;
 			path = searchData[i].path;
@@ -50,7 +51,9 @@ int FileModule::checkForFiles(std::vector<FILE_SEARCH_DATA> searchData, std::vec
 					found->push_back(fd);
 					std::wstring ws(L"");
 					fd.data.push_back(ws);
-					searchData[i].found == true;
+					//fix by JJ
+					//searchData[i].found == true;
+					searchData[i].found = true;
 				}
 				else {
 					std::wstring hash;
@@ -82,18 +85,18 @@ int FileModule::checkForFiles(std::vector<FILE_SEARCH_DATA> searchData, std::vec
 	}
 	
 	bool stop = true;
-	for (int i = 0; i < searchData.size(); ++i) {
+	for (unsigned int i = 0; i < searchData.size(); ++i) {
 		if (searchData[i].found == false) stop = false;
 	}
 	
 	if (stop)return 0;
 
-	for (int i = 0; i < volumes.size(); ++i) {
+	for (unsigned int i = 0; i < volumes.size(); ++i) {
 		volumes[i].pop_back();
-		//std::wcout << volumes[i] << std::endl;
+		std::wcerr << volumes[i] << std::endl; //debug by LB
 	}
 
-	for (int i = 0; i < volumes.size(); ++i) {
+	for (unsigned int i = 0; i < volumes.size(); ++i) {
 		searchFiles(searchData, volumes[i], found);
 	}
 	return 0;
@@ -112,11 +115,19 @@ int FileModule::searchFiles(std::vector<FILE_SEARCH_DATA> searchData, std::wstri
 		return 1;
 		
 	}
+
 	do {
+		// precomputed hashes by LB
+		std::wstring hashMD5, hashSHA1, hashSHA256;
+		std::wstring path;
+		path = currpath;
+		path.append(L"\\");
+		path.append(findFileData.cFileName);
+		// end fix by LB
 
 		// check searchfiles a regexes
 
-		for (int i = 0; i < searchData.size(); ++i) {
+		for (unsigned int i = 0; i < searchData.size(); ++i) {
 			if (searchData[i].found)continue;
 			// check path
 			if (searchData[i].dataId == FILE_EXACT_DATA) {
@@ -144,23 +155,30 @@ int FileModule::searchFiles(std::vector<FILE_SEARCH_DATA> searchData, std::wstri
 							fd.data.push_back(ws);
 							found->push_back(fd);
 						}
-						else {
+						else if (!(GetFileAttributesW(path.c_str()) & FILE_ATTRIBUTE_DIRECTORY)){
 							std::wstring hash;
-							std::wstring path;
-							path = currpath;
-							path.append(L"\\");
-							path.append(findFileData.cFileName);
+							// use precomputed hashes by LB
 							if (searchData[i].hashType == FILE_HASH_MD5_DATA) {
-								hashModule->calc_md5W(path, &hash);
+								if (hashMD5.empty()) {
+									hashModule->calc_md5W(path, &hashMD5);
+								}
+								hash = hashMD5;
 							}
 
 							if (searchData[i].hashType == FILE_HASH_SHA1_DATA) {
-								hashModule->calc_sha1W(path, &hash);
+								if (hashSHA1.empty()) {
+									hashModule->calc_sha1W(path, &hashSHA1);
+								}
+								hash = hashSHA1;
 							}
 
 							if (searchData[i].hashType == FILE_HASH_SHA256_DATA) {
-								hashModule->calc_sha256W(path, &hash);
+								if (hashSHA256.empty()) {
+									hashModule->calc_sha256W(path, &hashSHA256);
+								}
+								hash = hashSHA256;
 							}
+							// end fix by LB
 							
 							if (searchData[i].hash.compare(hash) == 0) {
 								searchData[i].found = true;
@@ -243,6 +261,9 @@ int FileModule::searchFiles(std::vector<FILE_SEARCH_DATA> searchData, std::wstri
 
 
 	} while (FindNextFileW(hFind, &findFileData) != 0);
+
+	//fix by JJ
+	return 0;
 }
 
 void FileModule::enumerateDrives(std::vector<std::wstring>* volumes) {
@@ -253,8 +274,9 @@ void FileModule::enumerateDrives(std::vector<std::wstring>* volumes) {
 
 	// vracia null(\0) za kazdym disk driveom
 	value = GetLogicalDriveStringsW(size, buffer);
+	//JJ verify
 
-	for (int i = 0; i < size - 2; ++i) {
+	for (unsigned int i = 0; i < size - 2; ++i) {
 		if (buffer[i] == '\0') {
 			buffer[i] = ' ';
 		}
@@ -265,7 +287,10 @@ void FileModule::enumerateDrives(std::vector<std::wstring>* volumes) {
 
 	while (!ss.eof()) {
 		std::getline(ss, item, L' ');
-		volumes->push_back(item);
+		//std::wcerr << GetDriveTypeW((item + L"\\").c_str()) << std::endl;
+		if (GetDriveTypeW((item + L"\\").c_str()) == DRIVE_FIXED) { // fix by LB, we want only fixed disks (hdd and flashdrives)
+			volumes->push_back(item);
+		}
 	};
 
 

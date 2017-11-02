@@ -18,7 +18,7 @@ void ProcessModule::enumerateDrives(std::vector<std::wstring>* volumes) {
 	// vracia null(\0) za kazdym disk driveom
 	value = GetLogicalDriveStringsW(size, buffer);
 
-	for (int i = 0; i < size - 1; ++i) {
+	for (unsigned int i = 0; i < size - 1; ++i) {
 		if (buffer[i] == '\0') {
 			buffer[i] = ' ';
 		}
@@ -71,7 +71,7 @@ int ProcessModule::checkProcesses(std::vector<PROCESS_SEARCH_DATA> searchData, s
 
 	}
 	while (spi->NextEntryOffset) {
-		for (int i = 0; i < searchData.size(); ++i) {
+		for (unsigned int i = 0; i < searchData.size(); ++i) {
 			if (spi->ImageName.Buffer == NULL)continue;
 			if (searchData[i].found) continue;
 			if (searchData[i].dataId == PROCESS_NAME_DATA) {
@@ -116,7 +116,7 @@ int ProcessModule::checkProcesses(std::vector<PROCESS_SEARCH_DATA> searchData, s
 				std::wstring kernelPath = ibuffer;
 				LPWSTR dosDevice = new WCHAR[32767];
 				std::wstring path;
-				for (int i = 0; i < volumes.size(); ++i) {
+				for (unsigned int i = 0; i < volumes.size(); ++i) {
 					
 
 					DWORD ret = QueryDosDeviceW(volumes[i].substr(0, volumes[i].size() - 1).c_str(), dosDevice, 32767);
@@ -189,7 +189,7 @@ std::wstring ProcessModule::getProcessPath(DWORD pid) {
 	std::wstring kernelPath = ibuffer;
 	LPWSTR dosDevice = new WCHAR[32767];
 	std::wstring path;
-	for (int i = 0; i < volumes.size(); ++i) {
+	for (unsigned int i = 0; i < volumes.size(); ++i) {
 		
 		DWORD ret = QueryDosDeviceW(volumes[i].substr(0, volumes[i].size() - 1).c_str(), dosDevice, 256);
 		if (ret == 0) { std::wcout << L"Error QueryDosDevice in ProcessModule: " << GetLastError() << std::endl; }
@@ -232,7 +232,8 @@ int ProcessModule::GetPrivileges() {
 }
 
 int ProcessModule::DropPrivileges() {
-	HANDLE hProcess;
+//fix by JJ - commented out
+//	HANDLE hProcess;
 	HANDLE hToken;
 	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken)) {
 		return 1;
